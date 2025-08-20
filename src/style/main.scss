@@ -1,0 +1,95 @@
+// Variables globales pour le thème météo
+$primary-blue: #1e3a8a;
+$sky-blue: #3b82f6;
+$light-blue: #93c5fd;
+$cloud-white: #f8fafc;
+$sun-yellow: #fbbf24;
+$rain-blue: #1e40af;
+$storm-gray: #374151;
+$night-dark: #1f2937;
+
+// Variables pour les gradients
+$sunrise-gradient: linear-gradient(45deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+$day-gradient: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%);
+$sunset-gradient: linear-gradient(45deg, #ff6b6b 0%, #ffa500 100%);
+$night-gradient: linear-gradient(45deg, #2c3e50 0%, #000428 100%);
+
+// Mixins pour les animations
+@mixin float-animation($duration: 3s) {
+  animation: float $duration ease-in-out infinite;
+}
+
+@mixin pulse-animation($duration: 2s) {
+  animation: pulse $duration ease-in-out infinite;
+}
+
+@mixin weather-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Animations CSS
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+@keyframes rain {
+  0% { transform: translateY(-100vh) rotate(10deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(100vh) rotate(10deg); opacity: 0; }
+}
+
+@keyframes clouds {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100vw); }
+}
+
+@keyframes sunRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Styles de base
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+  background: $day-gradient;
+  transition: background 1s ease;
+}
+
+// Classes utilitaires
+.glassmorphism {
+  @include weather-card;
+}
+
+.floating {
+  @include float-animation;
+}
+
+.pulsing {
+  @include pulse-animation;
+}
