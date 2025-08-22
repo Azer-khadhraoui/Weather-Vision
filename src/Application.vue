@@ -13,24 +13,25 @@
           <span class="temperature">{{ temperature }}°</span>
           <div class="info">
             <h2>{{ location }}</h2>
-            <p>{{ condition }}</p>
+            <p v-if="loading" class="loading">🔄 Chargement...</p>
+            <p v-else>{{ condition }}</p>
           </div>
         </div>
         
         <div class="weather-stats">
           <div class="stat-item">
             <span class="stat-icon">💧</span>
-            <span class="stat-value">65%</span>
+            <span class="stat-value">{{ humidity }}%</span>
             <span class="stat-label">Humidité</span>
           </div>
           <div class="stat-item">
             <span class="stat-icon">💨</span>
-            <span class="stat-value">12 km/h</span>
+            <span class="stat-value">{{ windSpeed }} km/h</span>
             <span class="stat-label">Vent</span>
           </div>
           <div class="stat-item">
             <span class="stat-icon">🌡️</span>
-            <span class="stat-value">1013 hPa</span>
+            <span class="stat-value">{{ pressure }} hPa</span>
             <span class="stat-label">Pression</span>
           </div>
         </div>
@@ -51,13 +52,19 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'WeatherApplication',
   data() {
     return {
       temperature: 22,
       location: 'Paris, France',
-      condition: 'Ensoleillé',
+      condition: 'Chargement...',
+      humidity: 65,
+      windSpeed: 12,
+      pressure: 1013,
+      loading: true,
       forecast: [
         { day: 'Aujourd\'hui', temp: 22, icon: '☀️' },
         { day: 'Demain', temp: 19, icon: '☁️' },
@@ -65,6 +72,39 @@ export default {
         { day: 'Vendredi', temp: 18, icon: '⛅' },
         { day: 'Samedi', temp: 24, icon: '☀️' }
       ]
+    }
+  },
+  mounted() {
+    this.fetchWeatherData()
+  },
+  methods: {
+    async fetchWeatherData() {
+      try {
+        // API gratuite - pas besoin de clé pour les données de base
+        const response = await axios.get('https://api.open-meteo.com/v1/forecast?latitude=48.8566&longitude=2.3522&current=temperature_2m,relative_humidity_2m,wind_speed_10m,surface_pressure&timezone=Europe/Paris')
+        
+        const current = response.data.current
+        
+        this.temperature = Math.round(current.temperature_2m)
+        this.humidity = current.relative_humidity_2m
+        this.windSpeed = Math.round(current.wind_speed_10m)
+        this.pressure = Math.round(current.surface_pressure)
+        this.condition = this.getWeatherCondition(current.temperature_2m)
+        this.loading = false
+        
+        console.log('Données météo reçues:', response.data)
+      } catch (error) {
+        console.error('Erreur lors du chargement des données météo:', error)
+        this.condition = 'Erreur de chargement'
+        this.loading = false
+      }
+    },
+    getWeatherCondition(temp) {
+      if (temp > 25) return 'Très chaud ☀️'
+      if (temp > 20) return 'Ensoleillé ☀️'
+      if (temp > 15) return 'Agréable ⛅'
+      if (temp > 10) return 'Frais ☁️'
+      return 'Froid 🌧️'
     }
   }
 }
