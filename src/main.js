@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
 import './style/main.scss'
-import Application from './Application.vue'
+import WeatherApp from './WeatherApp.vue'
 
-createApp(Application).mount('#app')
+createApp(WeatherApp).mount('#app')
